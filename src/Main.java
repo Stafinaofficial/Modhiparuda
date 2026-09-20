@@ -1,4 +1,14 @@
 import fighters.*;
+import battle.Battle;
+import skills.Fireball;
+import skills.ShieldSlam;
+import skills.Skill;
+import player.Player;
+import inventory.Inventory;
+import items.Armor;
+import items.Item;
+import items.Potion;
+import items.Weapon;
 
 /**
  * Entry point for the Arena Fighters test scenario.
@@ -8,43 +18,41 @@ public class Main {
         Knight arthur = new Knight("Arthur");
         Mage merlin = new Mage("Merlin");
 
-        System.out.println("===== ARENA FIGHTERS =====");
+        Player player = new Player("Stafina", arthur);
+        System.out.println("===== PLAYER TEST =====");
+        System.out.println("Player: " + player.getPlayerName());
+        System.out.println("Level: " + player.getLevel());
+        System.out.println("Coins: " + player.getCoins());
+        player.getFighter().displayStats();
 
-        System.out.println("\nInitial fighter stats:");
-        arthur.displayStats();
-        merlin.displayStats();
+        player.addExperience(150);
+        player.addCoins(100);
+        player.spendCoins(40);
+        System.out.println("After progress update:");
+        System.out.println("Level: " + player.getLevel());
+        System.out.println("Experience: " + player.getExperience());
+        System.out.println("Coins: " + player.getCoins());
 
-        System.out.println("\nRound 1: Arthur attacks Merlin.");
-        arthur.attack(merlin);
-        System.out.println("Merlin updated health: " + merlin.getHealth());
-        checkBattleStatus(arthur, merlin);
+        Inventory inventory = player.getInventory();
+        Item sword = new Weapon("Iron Sword", 100, 20);
+        Item armor = new Armor("Steel Armor", 120, 15);
+        Item healthPotion = new Potion("Health Potion", 50, "Restore", 30, "HP");
+        inventory.addItem(sword);
+        inventory.addItem(armor);
+        inventory.addItem(healthPotion);
+        inventory.displayInventory();
+        System.out.println("Has Iron Sword: " + inventory.hasItem(sword));
+        System.out.println("Items in inventory: " + inventory.getItemCount());
 
-        System.out.println("\nMerlin usesSkill on Arthur.");
-        merlin.useSkill(arthur);
-        System.out.println("Arthur updated health: " + arthur.getHealth());
-        checkBattleStatus(arthur, merlin);
+        System.out.println("===== SKILL POLYMORPHISM TEST =====");
+        Skill skill1 = new Fireball();
+        Skill skill2 = new ShieldSlam();
+        Mage testMage = new Mage("Test Mage");
+        Knight testKnight = new Knight("Test Knight");
+        skill1.use(testMage, testKnight);
+        skill2.use(testKnight, testMage);
 
-        System.out.println("\nArthur performs heavyAttack on Merlin.");
-        arthur.heavyAttack(merlin);
-        System.out.println("Merlin updated health: " + merlin.getHealth());
-        checkBattleStatus(arthur, merlin);
-
-        System.out.println("\n===== TEST COMPLETED =====");
-    }
-
-    /**
-     * Checks whether either fighter has been defeated and prints the appropriate message.
-     *
-     * @param fighter1 the first fighter
-     * @param fighter2 the second fighter
-     */
-    private static void checkBattleStatus(Fighter fighter1, Fighter fighter2) {
-        if (!fighter1.isAlive()) {
-            System.out.println(fighter1.getName() + " has been defeated!");
-        } else if (!fighter2.isAlive()) {
-            System.out.println(fighter2.getName() + " has been defeated!");
-        } else {
-            System.out.println("Battle continues...");
-        }
+        Battle battle = new Battle(player.getFighter(), merlin);
+        battle.startBattle();
     }
 }

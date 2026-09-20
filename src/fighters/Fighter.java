@@ -1,5 +1,7 @@
 package fighters;
 
+import skills.Skill;
+
 /**
  * Abstract base class for all arena fighters.
  */
@@ -15,6 +17,7 @@ public abstract class Fighter {
     protected int level;
     protected int experience;
     protected double criticalChance;
+    private Skill skill;
 
     /**
      * Creates a fighter with the given base attributes.
@@ -91,11 +94,27 @@ public abstract class Fighter {
     }
 
     /**
-     * Uses the fighter's class-specific skill.
+     * Uses the skill assigned by the fighter subclass.
      *
      * @param enemy the target fighter
      */
-    public abstract void useSkill(Fighter enemy);
+    public void useSkill(Fighter enemy) {
+        if (skill != null) {
+            skill.use(this, enemy);
+        }
+    }
+
+    /**
+     * Assigns the skill supplied by a fighter subclass.
+     *
+     * @param skill the fighter's skill
+     */
+    protected final void setSkill(Skill skill) {
+        if (skill == null) {
+            throw new IllegalArgumentException("skill must not be null");
+        }
+        this.skill = skill;
+    }
 
     /**
      * Applies damage to this fighter.
@@ -256,5 +275,13 @@ public abstract class Fighter {
 
     public void setExperience(int experience) {
         this.experience = Math.max(0, experience);
+    }
+
+    public Skill getSkill() {
+        return skill;
+    }
+
+    public double getCriticalChance() {
+        return criticalChance;
     }
 }
