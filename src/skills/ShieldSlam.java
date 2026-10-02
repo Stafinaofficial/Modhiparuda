@@ -21,7 +21,8 @@ public class ShieldSlam extends Skill {
             return;
         }
 
-        int finalDamage = Math.max(5, attacker.getAttack() + getDamage() - (target.getDefense() / 2));
+        int finalDamage = Math.max(5, attacker.getEffectiveAttack() + getDamage()
+            - (target.getEffectiveDefense() / 2));
         target.takeDamage(finalDamage);
         attacker.setDefense(attacker.getDefense() + 2);
         System.out.println(attacker.getName() + " uses Shield Slam on " + target.getName()

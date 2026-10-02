@@ -17,6 +17,8 @@ public abstract class Fighter {
     protected int level;
     protected int experience;
     protected double criticalChance;
+    private int weaponBonus;
+    private int armorBonus;
     private Skill skill;
 
     /**
@@ -43,6 +45,8 @@ public abstract class Fighter {
         this.level = level;
         this.experience = 0;
         this.criticalChance = criticalChance;
+        this.weaponBonus = 0;
+        this.armorBonus = 0;
     }
 
     /**
@@ -55,7 +59,7 @@ public abstract class Fighter {
             return;
         }
 
-        int damage = calculateDamage(this.attack, enemy.defense, false);
+        int damage = calculateDamage(getEffectiveAttack(), enemy.getEffectiveDefense(), false);
         if (Math.random() < criticalChance) {
             damage = (int) (damage * 1.5);
             System.out.println(name + " lands a critical hit!");
@@ -75,7 +79,7 @@ public abstract class Fighter {
             return;
         }
 
-        int damage = calculateDamage(this.attack + 6, enemy.defense, true);
+        int damage = calculateDamage(getEffectiveAttack() + 6, enemy.getEffectiveDefense(), true);
         enemy.takeDamage(damage);
         System.out.println(name + " uses a heavy attack on " + enemy.getName() + " for " + damage + " damage.");
     }
@@ -122,7 +126,7 @@ public abstract class Fighter {
      * @param damage the incoming damage amount
      */
     public void takeDamage(int damage) {
-        int actualDamage = Math.max(0, damage - (defense / 2));
+        int actualDamage = Math.max(0, damage - (getEffectiveDefense() / 2));
         health = Math.max(0, health - actualDamage);
 
         if (!isAlive()) {
@@ -176,8 +180,8 @@ public abstract class Fighter {
         System.out.println("Level: " + level);
         System.out.println("Health: " + health + "/" + maxHealth);
         System.out.println("Mana: " + mana + "/" + maxMana);
-        System.out.println("Attack: " + attack);
-        System.out.println("Defense: " + defense);
+        System.out.println("Attack: " + getEffectiveAttack());
+        System.out.println("Defense: " + getEffectiveDefense());
         System.out.println("Speed: " + speed);
         System.out.println("Experience: " + experience);
     }
@@ -197,6 +201,17 @@ public abstract class Fighter {
 
     public String getName() {
         return name;
+    }
+
+    /**
+     * Updates the derived equipment bonuses without changing base stats.
+     *
+     * @param weaponBonus the current weapon attack bonus
+     * @param armorBonus the current armor defense bonus
+     */
+    public void setEquipmentBonuses(int weaponBonus, int armorBonus) {
+        this.weaponBonus = Math.max(0, weaponBonus);
+        this.armorBonus = Math.max(0, armorBonus);
     }
 
     public void setName(String name) {
@@ -238,7 +253,19 @@ public abstract class Fighter {
     }
 
     public int getAttack() {
+        return getEffectiveAttack();
+    }
+
+    public int getBaseAttack() {
         return attack;
+    }
+
+    public int getEffectiveAttack() {
+        return attack + weaponBonus;
+    }
+
+    public int getWeaponBonus() {
+        return weaponBonus;
     }
 
     public void setAttack(int attack) {
@@ -246,7 +273,19 @@ public abstract class Fighter {
     }
 
     public int getDefense() {
+        return getEffectiveDefense();
+    }
+
+    public int getBaseDefense() {
         return defense;
+    }
+
+    public int getEffectiveDefense() {
+        return defense + armorBonus;
+    }
+
+    public int getArmorBonus() {
+        return armorBonus;
     }
 
     public void setDefense(int defense) {
